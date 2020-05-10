@@ -3,14 +3,14 @@ const User = require('../models/user')
 const auth = require('../middleware/auth')
 const router = new express.Router()
 const multer = require('multer')
-const { sendWelcomeEmail } = require('../emails/account')
+// const { sendWelcomeEmail } = require('../emails/account')
 const sharp = require('sharp')
 
 router.post('/users', async (req, res) => {
   const user = new User(req.body)
   try{
     await user.save()
-    sendWelcomeEmail(user.email, user.name)
+    // sendWelcomeEmail(user.email, user.name)
     const token = await user.generateAuthToken()
     res.status(201).send({user, token})
   }catch(e){
@@ -51,29 +51,9 @@ router.post('/users/logoutAll', auth, async (req, res) => {
 })
 
 router.get('/users/me', auth, async (req, res) => {
-  // Below commented code is to read all users
-  // try {
-  //   const users = await User.find({})
-  //   res.send(users)
-  // } catch (e) {
-  //   res.status(500).send()
-  // }
   res.send(req.user)
 })
-//get user by id
-// router.get('/users/:id', async (req, res) => {
-//   const _id = req.params.id
-//   try{
-//     const user = await User.findById(_id)
-//     if(!user) {
-//       return res.status(404).send()
-//     }
-//     res.send(user)
-//   }
-//   catch (e) {
-//     res.status(500).send()
-//   }
-// })
+
 
 router.patch('/users/me', auth, async (req, res) => {
   const updates = Object.keys(req.body)
@@ -132,10 +112,10 @@ router.delete('/users/me/avatar', auth, async (req, res) => {
     res.send()
 })
 
-router.get('/users/:id/avatar', async (req, res) => {
+router.get('/users/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
-
+    console.log(user.avatar)
     if(!user || !user.avatar) {
       throw new Error()
     }
